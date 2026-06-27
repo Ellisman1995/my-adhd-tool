@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADHD Momentum Engine</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Print Styles for the Printable Card */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-card-area, #printable-card-area * {
+                visibility: visible;
+            }
+            #printable-card-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white min-h-screen">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+                    <i data-lucide="brain" class="w-6 h-6 animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        ADHD Momentum Engine <span class="text-xs font-semibold px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/30">v1.0</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">On-the-fly prioritization tools that work with your nervous system</p>
+                </div>
+            </div>
+            
+            <!-- Tabs Navigation -->
+            <nav class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto overflow-x-auto">
+                <button onclick="switchTab('tree')" id="tab-tree" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap bg-indigo-600 text-white shadow-lg">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Decision Tree
+                </button>
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i> Task Slicer
+                </button>
+                <button onclick="switchTab('printable')" id="tab-printable" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200">
+                    <i data-lucide="printer" class="w-3.5 h-3.5"></i> Printable Card
+                </button>
+                <button onclick="switchTab('markdown')" id="tab-markdown" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Markdown Copy
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- ================= TAB 1: DECISION TREE ================= -->
+        <section id="content-tree" class="tab-content space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <!-- Start View -->
+                <div id="tree-start" class="text-center py-8 space-y-6">
+                    <div class="inline-flex p-3 bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/20 mb-2">
+                        <i data-lucide="brain" class="w-10 h-10"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h2 class="text-2xl font-bold text-white">How does your brain feel right now?</h2>
+                        <p class="text-slate-400 max-w-md mx-auto text-sm">
+                            Don't think about your task list. Check in with your body and nervous system. Select your state below.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto pt-4">
+                        <button onclick="setTreeState('paralyzed')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-amber-500/50 transition-all text-left group">
+                            <div class="p-3 bg-amber-500/10 text-amber-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="zap" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">Paralyzed / Staring Blankly</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">You can't seem to start anything at all.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="setTreeState('anxious')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-rose-500/50 transition-all text-left group">
+                            <div class="p-3 bg-rose-500/10 text-rose-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">Anxious / Looming Dread</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">One heavy task is hanging over your head.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="setTreeState('overwhelmed')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-emerald-500/50 transition-all text-left group">
+                            <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="flame" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">Overwhelmed / Too Many Fires</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">Everything feels urgent and critical.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="setTreeState('exhausted')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-blue-500/50 transition-all text-left group">
+                            <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="battery" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">Exhausted / Low Battery</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">You have zero mental energy left.</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- State: Paralyzed -->
+                <div id="tree-paralyzed" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="zap" class="w-5 h-5 text-amber-400"></i>
+                            <h3 class="font-bold text-lg text-white">Your Prescription: The Dopamine Ramp</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Your executive function is temporarily locked. Trying to do your "most important" task right now is a trap. We need to generate easy, friction-free dopamine first, then hijack that momentum.
+                    </p>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h4 class="font-semibold text-sm text-amber-400">The 3-Minute Protocol:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                            <li>Look at your workspace or list. Pick the absolute <strong class="text-white">easiest, most satisfying, or most novel task</strong>.</li>
+                            <li>It must take under 5 minutes (e.g., throw away trash, clear 3 emails, tidy your immediate desk space).</li>
+                            <li>Set the timer below for 3 minutes and race to complete it before the beep.</li>
+                        </ol>
+                    </div>
+                    <!-- Timer Container -->
+                    <div class="timer-container" data-duration="180"></div>
+                </div>
+
+                <!-- State: Anxious -->
+                <div id="tree-anxious" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="alert-circle" class="w-5 h-5 text-rose-400"></i>
+                            <h3 class="font-bold text-lg text-white">Your Prescription: Relief-First & Micro-Slicing</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        You are experiencing cognitive dread. A single "Monster" task is draining your mental RAM. We are going to shrink this monster down until it no longer triggers your nervous system's fight-or-flight response.
+                    </p>
+
+                    <!-- Slice Step 1 -->
+                    <div id="slice-step-1" class="space-y-4">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">What is the "Monster" task you are avoiding?</label>
+                        <input type="text" id="monster-input" placeholder="e.g., Finish the quarterly report, Do my taxes..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
+                        <button onclick="goToSliceStep(2)" class="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl transition-colors">
+                            Slice This Monster <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Slice Step 2 -->
+                    <div id="slice-step-2" class="hidden space-y-4">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                          <span class="text-xs text-slate-500">The Monster:</span>
+                          <p id="monster-display" class="text-sm font-semibold text-slate-300"></p>
+                        </div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Now, write down the absolute smallest, most ridiculously easy first step.</label>
+                        <p class="text-xs text-slate-400 italic">It must be so small that it feels stupid to write down (e.g., "Open Google Doc and write title").</p>
+                        <input type="text" id="micro-input" placeholder="e.g., Open document and type name..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
+                        <div class="flex gap-3">
+                            <button onclick="goToSliceStep(1)" class="px-4 py-3 bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-300 text-sm font-semibold rounded-xl transition-colors">Back</button>
+                            <button onclick="goToSliceStep(3)" class="flex-1 flex items-center justify-center gap-2 py-3 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm rounded-xl transition-colors">Commit to this Micro-Step</button>
+                        </div>
+                    </div>
+
+                    <!-- Slice Step 3 -->
+                    <div id="slice-step-3" class="hidden space-y-6 text-center py-4">
+                        <div class="max-w-md mx-auto space-y-4">
+                            <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">Your Only Mission Right Now:</span>
+                            <div class="p-6 bg-slate-950 border-2 border-rose-500/30 rounded-2xl shadow-inner">
+                                <p id="micro-display" class="text-lg font-bold text-white"></p>
+                            </div>
+                            <p class="text-xs text-slate-400">Do not think about finishing the whole task. Just do this tiny step. Once done, momentum will take over.</p>
+                        </div>
+                        <div class="timer-container" data-duration="120"></div>
+                        <button onclick="resetTree()" class="px-6 py-2 bg-slate-950 border border-slate-800 hover:bg-slate-800 text-xs text-slate-300 rounded-lg transition-colors">I'm Done! Reset Tool</button>
+                    </div>
+                </div>
+
+                <!-- State: Overwhelmed -->
+                <div id="tree-overwhelmed" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="flame" class="w-5 h-5 text-emerald-400"></i>
+                            <h3 class="font-bold text-lg text-white">Your Prescription: Fire vs. Lever Duel</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        When everything is shouting for attention, your brain treats a minor email and a major deadline with the same level of panic. We need to force a head-to-head comparison to separate real risk from future value.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 rounded-xl border border-rose-500/20 bg-rose-950/10 space-y-2">
+                            <div class="flex items-center gap-2 text-rose-400 font-semibold text-sm">
+                                <i data-lucide="flame" class="w-4 h-4"></i> The Fire (Risk Reduction)
+                            </div>
+                            <p class="text-xs text-slate-400">What is the ONE task that, if not done in the next few hours, will result in immediate negative consequences?</p>
+                        </div>
+                        <div class="p-5 rounded-xl border border-indigo-500/20 bg-indigo-950/10 space-y-2">
+                            <div class="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
+                                <i data-lucide="zap" class="w-4 h-4"></i> The Lever (Future ROI)
+                            </div>
+                            <p class="text-xs text-slate-400">What is the ONE task that, if completed, will make 3 other tasks easier or completely irrelevant tomorrow?</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h4 class="font-semibold text-sm text-slate-200">The 3-Minute Protocol:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                            <li>Identify your <strong>one Fire</strong> and your <strong>one Lever</strong>.</li>
+                            <li>Ask yourself: <strong class="text-white">"Am I currently fueled by urgency (Fire), or do I have the brainpower to invest in the future (Lever)?"</strong></li>
+                            <li>Pick one, cross out the other for now, and start. Set a 3-minute timer to initiate action.</li>
+                        </ol>
+                    </div>
+                    <div class="timer-container" data-duration="180"></div>
+                </div>
+
+                <!-- State: Exhausted -->
+                <div id="tree-exhausted" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="battery" class="w-5 h-5 text-blue-400"></i>
+                            <h3 class="font-bold text-lg text-white">Your Prescription: Energy-State Match</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Forcing an ADHD brain to do high-focus analytical work when it is in a low-dopamine, fatigued state is like trying to start a car with no gas. Let's match your task to your actual biological battery.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-1">
+                            <span class="text-xs font-bold text-rose-400">Level 3 (High Battery)</span>
+                            <p class="text-xs text-slate-300">Creative, problem-solving, high focus, heavy writing.</p>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-1">
+                            <span class="text-xs font-bold text-amber-400">Level 2 (Medium Battery)</span>
+                            <p class="text-xs text-slate-300">Routine tasks, responding to standard emails, editing.</p>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-1">
+                            <span class="text-xs font-bold text-emerald-400">Level 1 (Low Battery)</span>
+                            <p class="text-xs text-slate-300">Physical tasks, filing, cleaning, mindless data entry.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h4 class="font-semibold text-sm text-slate-200">The 3-Minute Protocol:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                            <li>Acknowledge your current level. If you are at <strong>Level 1</strong>, do not touch Level 3 tasks.</li>
+                            <li>Find a Level 1 task (e.g., shredding papers, organizing folders, deleting spam).</li>
+                            <li>Doing low-energy tasks keeps momentum alive, whereas forcing high-energy tasks leads to a shame spiral.</li>
+                        </ol>
+                    </div>
+                    <div class="timer-container" data-duration="180"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: TASK SLICER DASHBOARD ================= -->
+        <section id="content-dashboard" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Task Input & List -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                        <i data-lucide="layers" class="w-5 h-5 text-indigo-400"></i> Quick Task Dump
+                    </h3>
+                    <form onsubmit="handleAddTask(event)" class="space-y-4">
+                        <input type="text" id="task-text-input" placeholder="What needs to be done?" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500" required>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Energy Required</label>
+                                <select id="task-energy-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                                    <option value="3">⚡⚡⚡ High (3)</option>
+                                    <option value="2" selected>⚡⚡ Med (2)</option>
+                                    <option value="1">⚡ Low (1)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Task Type</label>
+                                <select id="task-type-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                                    <option value="normal" selected>Normal</option>
+                                    <option value="fire">🔥 Fire (Risk)</option>
+                                    <option value="lever">⚙️ Lever (ROI)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Dread Level</label>
+                                <select id="task-dread-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                                    <option value="low" selected>Low Dread</option>
+                                    <option value="high">💀 High Dread</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-colors">Add Task</button>
+                    </form>
+                </div>
+
+                <!-- Task List Container -->
+                <div id="clutter-container" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-slate-300">Your Current Brain Dump (<span id="task-count">0</span>)</h4>
+                        <button onclick="filterMyBrain()" id="filter-brain-btn" class="hidden px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center gap-1">
+                            <i data-lucide="brain" class="w-3.5 h-3.5"></i> Filter My Brain
+                        </button>
+                    </div>
+                    <div id="task-list" class="space-y-2">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Focus Mode Column -->
+            <div class="space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl h-full flex flex-col justify-between min-h-[350px]">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+                            <h3 class="font-bold text-sm text-slate-300 flex items-center gap-2">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i> Focus Mode
+                            </h3>
+                            <button onclick="showAllClutter()" id="show-all-btn" class="hidden text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Show All
+                            </button>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="focus-empty-state" class="text-center py-12 space-y-3">
+                            <div class="inline-flex p-3 bg-slate-800 text-slate-500 rounded-full">
+                                <i data-lucide="eye-off" class="w-6 h-6"></i>
+                            </div>
+                            <p class="text-xs text-slate-400 max-w-xs mx-auto">
+                                Add tasks to your quick dump and click <strong class="text-slate-300">"Filter My Brain"</strong> to isolate your winning focus task.
+                            </p>
+                        </div>
+
+                        <!-- Active Focus Task -->
+                        <div id="focus-active-state" class="hidden space-y-6">
+                            <div class="p-4 bg-slate-950 border border-emerald-500/30 rounded-xl space-y-2">
+                                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Your One Task:</span>
+                                <p id="focus-task-text" class="text-base font-bold text-white"></p>
+                            </div>
+                            <div class="space-y-2">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Why this task?</span>
+                                <p id="focus-task-reason" class="text-xs text-slate-300 leading-relaxed"></p>
+                            </div>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Action Strategy:</span>
+                                <p class="text-xs text-slate-300">Set the timer below. Your goal is not to finish the entire task, but just to work on it for 3 minutes.</p>
+                                <div class="timer-container" data-duration="180"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Focus Footer Controls -->
+                    <div id="focus-controls" class="hidden pt-6 border-t border-slate-800 flex gap-2">
+                        <button onclick="markFocusCompleted()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-1">
+                            <i data-lucide="check" class="w-3.5 h-3.5"></i> Mark Completed
+                        </button>
+                        <button onclick="resetFocus()" class="px-3 py-2 bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs rounded-lg transition-colors">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: PRINTABLE CHEAT SHEET ================= -->
+        <section id="content-printable" class="tab-content hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div class="space-y-1">
+                    <h3 class="font-bold text-lg text-white">Printable Emergency Cheat Sheet</h3>
+                    <p class="text-xs text-slate-400">Keep this on your physical desk or fold it into your wallet to bypass digital screens.</p>
+                </div>
+                <button onclick="window.print()" class="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-colors">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Print Card
+                </button>
+            </div>
+
+            <div id="printable-card-area" class="bg-white text-slate-950 p-8 rounded-2xl border border-slate-200 shadow-xl max-w-2xl mx-auto">
+                <div class="border-2 border-dashed border-slate-400 p-6 rounded-xl space-y-6">
+                    <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
+                        <div>
+                            <h2 class="text-lg font-black tracking-tight uppercase">ADHD Emergency Prioritizer</h2>
+                            <p class="text-[10px] text-slate-600 font-medium">Run these 3-minute protocols when paralyzed or overwhelmed.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] font-bold bg-slate-900 text-white px-2 py-0.5 rounded">FOLDABLE CARD</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="space-y-1 border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-4">
+                            <h4 class="font-bold text-slate-900">1. Relief-First Filter</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Identify the ONE task causing a background hum of guilt/anxiety. Circle it, hide the rest of the list, and commit to working on it for just 3 minutes.</p>
+                        </div>
+                        <div class="space-y-1 pb-4 md:pb-0">
+                            <h4 class="font-bold text-slate-900">2. The Dopamine Ramp</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Select a low-friction, high-satisfaction task (takes &lt; 5 mins). Set a timer, complete it immediately, and hijack that momentum to transition into harder work.</p>
+                        </div>
+                        <div class="space-y-1 border-t border-slate-200 pt-4 border-b md:border-b-0 md:border-r md:pr-4">
+                            <h4 class="font-bold text-slate-900">3. Fire vs. Lever Duel</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Compare your top <strong>Fire</strong> (immediate risk reduction) vs. your top <strong>Lever</strong> (future ROI). Choose based on whether you are fueled by urgency or energy.</p>
+                        </div>
+                        <div class="space-y-1 border-t border-slate-200 pt-4">
+                            <h4 class="font-bold text-slate-900">4. Energy-State Match</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Match tasks to your biological battery: Level 3 (High creative/analytical), Level 2 (Medium routine/emails), Level 1 (Low cleaning/mindless data entry).</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t-2 border-slate-900 pt-4 space-y-2">
+                        <h4 class="font-bold text-xs text-slate-900 uppercase tracking-wider">5. The Micro-Slicing Monster Tamer</h4>
+                        <div class="grid grid-cols-3 gap-2 text-[10px] text-slate-600 leading-relaxed">
+                            <div class="bg-slate-100 p-2 rounded">
+                                <span class="font-bold text-slate-900 block">Step 1: Identify</span> Write down the massive "Monster" task you are actively avoiding.
+                            </div>
+                            <div class="bg-slate-100 p-2 rounded">
+                                <span class="font-bold text-slate-900 block">Step 2: Shrink</span> Write the smallest, easiest first step (takes &lt; 1 min).
+                            </div>
+                            <div class="bg-slate-100 p-2 rounded">
+                                <span class="font-bold text-slate-900 block">Step 3: Commit</span> Do ONLY that step. Let momentum do the rest.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: MARKDOWN COPY-PASTE ================= -->
+        <section id="content-markdown" class="tab-content hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div class="space-y-1">
+                    <h3 class="font-bold text-lg text-white">Markdown Copy-Paste Guide</h3>
+                    <p class="text-xs text-slate-400">Copy this pre-formatted markdown guide directly into Notion, Obsidian, or Apple Notes.</p>
+                </div>
+                <button onclick="copyMarkdown()" class="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-colors">
+                    <i id="copy-icon" data-lucide="copy" class="w-4 h-4"></i> <span id="copy-text">Copy Markdown</span>
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <pre id="markdown-block" class="text-xs text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-[500px] overflow-y-auto bg-slate-950 p-4 rounded-xl border border-slate-800">## 🧠 ADHD Emergency Prioritization Flowchart
+
+> **The Golden Rule:** An ADHD brain in motion stays in motion. Prioritize for *momentum*, not just importance.
+
+### ⚡ Quick Diagnostic Flowchart
+1. **How does your brain feel right now?**
+   * **Paralyzed / Staring Blankly** ➔ Go to **Method 2: Dopamine Ramp**
+   * **Anxious / Looming Dread** ➔ Go to **Method 1: Relief-First Filter** or **Method 5: Micro-Slicing**
+   * **Overwhelmed by Urgent Things** ➔ Go to **Method 3: Fire vs. Lever Duel**
+   * **Exhausted / Low Battery** ➔ Go to **Method 4: Energy-State Match**
+
+---
+
+### 🛠️ The 5-Minute Emergency Protocols
+
+#### 1. Relief-First Filter (Cognitive Decongestion)
+* **Goal:** Remove the task draining your mental RAM.
+* **Protocol:**
+  1. Scan your list quickly.
+  2. Identify the ONE task causing a background hum of guilt/anxiety.
+  3. Circle it and hide the rest of the list.
+  4. Commit to working on it for just 3 minutes.
+
+#### 2. The Dopamine Ramp (Momentum Builder)
+* **Goal:** Lower the barrier to entry to break paralysis.
+* **Protocol:**
+  1. Pick an absolute easiest, most satisfying task (takes < 5 minutes).
+  2. Set a timer for 3 minutes.
+  3. Complete it immediately, then use that dopamine spike to start a harder task.
+
+#### 3. Fire vs. Lever Duel (Urgency Filter)
+* **Goal:** Separate real risk from future value.
+* **Protocol:**
+  1. Pick **one Fire** (immediate negative consequences if ignored).
+  2. Pick **one Lever** (makes 3 other tasks easier tomorrow).
+  3. Ask: *"Am I fueled by urgency (Fire) or do I have brainpower for future ROI (Lever)?"*
+  4. Choose one, cross out the other, and start.
+
+#### 4. Energy-State Match (Energy Preservation)
+* **Goal:** Work with your biology, not against it.
+* **Protocol:**
+  * **Level 3 (High Battery):** Creative, problem-solving, deep focus.
+  * **Level 2 (Medium Battery):** Routine tasks, responding to emails, editing.
+  * **Level 1 (Low Battery):** Physical tasks, filing, cleaning, mindless data entry.
+  * *Action:* Tag tasks 1-3 and match your current battery level.
+
+#### 5. The Micro-Slicing Monster Tamer (Anxiety Reducer)
+* **Goal:** Shrink the task until it no longer triggers fight-or-flight.
+* **Protocol:**
+  1. Write down the giant "Monster" task you are avoiding.
+  2. Write down the absolute smallest, easiest first step (takes < 1 minute).
+  3. Commit *only* to doing that micro-step.</pre>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Audio Synthesizer (No external sound files needed)
+        function playBeep(freq = 880, duration = 0.15) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.log("AudioContext blocked or unsupported by browser security policies.");
+            }
+        }
+
+        // --- TAB SWITCHING LOGIC ---
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Show selected content
+            const targetContent = document.getElementById(`content-${tabId}`);
+            if (targetContent) {
+                if (tabId === 'dashboard') {
+                    targetContent.classList.remove('hidden');
+                    targetContent.classList.add('grid');
+                } else {
+                    targetContent.classList.remove('hidden');
+                }
+            }
+
+            // Update active tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200";
+            });
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap bg-indigo-600 text-white shadow-lg";
+            }
+        }
+
+        // --- TAB 1: DECISION TREE LOGIC ---
+        let currentTreeState = 'start';
+        function setTreeState(state) {
+            currentTreeState = state;
+            // Hide all states
+            document.getElementById('tree-start').classList.add('hidden');
+            document.getElementById('tree-paralyzed').classList.add('hidden');
+            document.getElementById('tree-anxious').classList.add('hidden');
+            document.getElementById('tree-overwhelmed').classList.add('hidden');
+            document.getElementById('tree-exhausted').classList.add('hidden');
+
+            // Show selected state
+            document.getElementById(`tree-${state}`).classList.remove('hidden');
+            
+            // If anxious, reset slice steps
+            if (state === 'anxious') {
+                goToSliceStep(1);
+            }
+        }
+
+        function resetTree() {
+            setTreeState('start');
+            document.getElementById('monster-input').value = '';
+            document.getElementById('micro-input').value = '';
+        }
+
+        function goToSliceStep(step) {
+            document.getElementById('slice-step-1').classList.add('hidden');
+            document.getElementById('slice-step-2').classList.add('hidden');
+            document.getElementById('slice-step-3').classList.add('hidden');
+
+            if (step === 2) {
+                const monsterVal = document.getElementById('monster-input').value;
+                if (!monsterVal) return;
+                document.getElementById('monster-display').innerText = monsterVal;
+            }
+            if (step === 3) {
+                const microVal = document.getElementById('micro-input').value;
+                if (!microVal) return;
+                document.getElementById('micro-display').innerText = microVal;
+            }
+
+            document.getElementById(`slice-step-${step}`).classList.remove('hidden');
+        }
+
+        // --- TAB 2: TASK SLICER DASHBOARD LOGIC ---
+        let tasks = [
+            { id: 1, text: 'Clean up desktop files', energy: '1', type: 'normal', dread: 'low' },
+            { id: 2, text: 'Submit quarterly report draft', energy: '3', type: 'fire', dread: 'high' },
+            { id: 3, text: 'Organize digital templates', energy: '2', type: 'lever', dread: 'low' }
+        ];
+        let activeFocusTask = null;
+
+        function renderTasks() {
+            const listEl = document.getElementById('task-list');
+            const countEl = document.getElementById('task-count');
+            const filterBtn = document.getElementById('filter-brain-btn');
+            
+            listEl.innerHTML = '';
+            countEl.innerText = tasks.length;
+
+            if (tasks.length > 0) {
+                filterBtn.classList.remove('hidden');
+            } else {
+                filterBtn.classList.add('hidden');
+            }
+
+            tasks.forEach(task => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = "flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl";
+                
+                let tagsHTML = `<span class="text-[9px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded">Energy: ${task.energy}</span>`;
+                if (task.type === 'fire') tagsHTML += `<span class="text-[9px] px-1.5 py-0.5 bg-rose-500/15 text-rose-400 rounded border border-rose-500/25">🔥 Fire</span>`;
+                if (task.type === 'lever') tagsHTML += `<span class="text-[9px] px-1.5 py-0.5 bg-indigo-500/15 text-indigo-400 rounded border border-indigo-500/25">⚙️ Lever</span>`;
+                if (task.dread === 'high') tagsHTML += `<span class="text-[9px] px-1.5 py-0.5 bg-amber-500/15 text-amber-400 rounded border border-amber-500/25">💀 High Dread</span>`;
+
+                taskDiv.innerHTML = `
+                    <div class="space-y-1 flex-1 min-w-0 pr-3">
+                        <p class="text-xs font-semibold text-slate-200 truncate">${task.text}</p>
+                        <div class="flex flex-wrap gap-1.5">${tagsHTML}</div>
+                    </div>
+                    <button onclick="deleteTask(${task.id})" class="text-slate-500 hover:text-rose-400 p-1 rounded transition-colors">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+                listEl.appendChild(taskDiv);
+            });
+            lucide.createIcons();
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const text = document.getElementById('task-text-input').value;
+            const energy = document.getElementById('task-energy-input').value;
+            const type = document.getElementById('task-type-input').value;
+            const dread = document.getElementById('task-dread-input').value;
+
+            tasks.push({ id: Date.now(), text, energy, type, dread });
+            document.getElementById('task-text-input').value = '';
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            renderTasks();
+            if (activeFocusTask && activeFocusTask.id === id) {
+                resetFocus();
+            }
+        }
+
+        function filterMyBrain() {
+            if (tasks.length === 0) return;
+
+            let selected = null;
+            let reason = '';
+
+            const highDread = tasks.filter(t => t.dread === 'high');
+            const fires = tasks.filter(t => t.type === 'fire');
+            const levers = tasks.filter(t => t.type === 'lever');
+
+            if (highDread.length > 0) {
+                selected = highDread[Math.floor(Math.random() * highDread.length)];
+                reason = 'Relief-First Filter: This task is causing the highest background anxiety. Knocking out even a micro-step of this will free up the most mental energy.';
+            } else if (fires.length > 0) {
+                selected = fires[Math.floor(Math.random() * fires.length)];
+                reason = 'Fire Filter: This task has immediate negative consequences if ignored. Focus here to reduce risk.';
+            } else if (levers.length > 0) {
+                selected = levers[Math.floor(Math.random() * levers.length)];
+                reason = 'Lever Filter: This task is an investment. Doing it will make other tasks easier or irrelevant.';
+            } else {
+                selected = tasks[Math.floor(Math.random() * tasks.length)];
+                reason = 'Dopamine Ramp: No critical fires or dread tasks detected. Let\'s build momentum with this task!';
+            }
+
+            activeFocusTask = selected;
+            
+            // Update UI
+            document.getElementById('focus-task-text').innerText = selected.text;
+            document.getElementById('focus-task-reason').innerText = reason;
+            
+            document.getElementById('focus-empty-state').classList.add('hidden');
+            document.getElementById('focus-active-state').classList.remove('hidden');
+            document.getElementById('focus-controls').classList.remove('hidden');
+
+            // Hide Clutter
+            document.getElementById('clutter-container').classList.add('hidden');
+            document.getElementById('show-all-btn').classList.remove('hidden');
+        }
+
+        function showAllClutter() {
+            document.getElementById('clutter-container').classList.remove('hidden');
+            document.getElementById('show-all-btn').classList.add('hidden');
+        }
+
+        function resetFocus() {
+            activeFocusTask = null;
+            document.getElementById('focus-empty-state').classList.remove('hidden');
+            document.getElementById('focus-active-state').classList.add('hidden');
+            document.getElementById('focus-controls').classList.add('hidden');
+            showAllClutter();
+        }
+
+        function markFocusCompleted() {
+            if (activeFocusTask) {
+                deleteTask(activeFocusTask.id);
+            }
+            resetFocus();
+        }
+
+        // --- TAB 4: COPY MARKDOWN ---
+        function copyMarkdown() {
+            const text = document.getElementById('markdown-block').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btnText = document.getElementById('copy-text');
+                const btnIcon = document.getElementById('copy-icon');
+                btnText.innerText = 'Copied!';
+                btnIcon.setAttribute('data-lucide', 'check');
+                lucide.createIcons();
+                playBeep(1000, 0.1);
+                setTimeout(() => {
+                    btnText.innerText = 'Copy Markdown';
+                    btnIcon.setAttribute('data-lucide', 'copy');
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+
+        // --- REUSABLE TIMER ENGINE ---
+        function initTimers() {
+            document.querySelectorAll('.timer-container').forEach(container => {
+                const duration = parseInt(container.getAttribute('data-duration'));
+                let timeLeft = duration;
+                let timerInterval = null;
+
+                const formatTime = (secs) => {
+                    const m = Math.floor(secs / 60);
+                    const s = secs % 60;
+                    return `${m}:${s < 10 ? '0' : ''}${s}`;
+                };
+
+                container.innerHTML = `
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="time-display text-2xl font-black font-mono text-white tracking-widest bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
+                                ${formatTime(timeLeft)}
+                            </div>
+                            <div class="text-left">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Action Timer</span>
+                                <span class="text-xs text-slate-300">Work until the beep.</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button class="play-btn flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 rounded-lg font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors">
+                                <i data-lucide="play" class="w-3.5 h-3.5"></i> <span>Start</span>
+                            </button>
+                            <button class="reset-btn px-3 py-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg transition-colors">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                const display = container.querySelector('.time-display');
+                const playBtn = container.querySelector('.play-btn');
+                const resetBtn = container.querySelector('.reset-btn');
+
+                const updateButtonUI = (running) => {
+                    const icon = playBtn.querySelector('i');
+                    const label = playBtn.querySelector('span');
+                    if (running) {
+                        playBtn.className = "play-btn flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 rounded-lg font-bold text-xs bg-amber-600 hover:bg-amber-500 text-white transition-colors";
+                        icon.setAttribute('data-lucide', 'pause');
+                        label.innerText = 'Pause';
+                    } else {
+                        playBtn.className = "play-btn flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 rounded-lg font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors";
+                        icon.setAttribute('data-lucide', 'play');
+                        label.innerText = 'Start';
+                    }
+                    lucide.createIcons();
+                };
+
+                playBtn.addEventListener('click', () => {
+                    if (timerInterval) {
+                        // Pause
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        updateButtonUI(false);
+                        playBeep(600, 0.05);
+                    } else {
+                        // Start
+                        updateButtonUI(true);
+                        playBeep(600, 0.05);
+                        timerInterval = setInterval(() => {
+                            if (timeLeft <= 1) {
+                                clearInterval(timerInterval);
+                                timerInterval = null;
+                                timeLeft = 0;
+                                display.innerText = formatTime(0);
+                                updateButtonUI(false);
+                                playBeep(880, 0.5); // Completion Beep
+                            } else {
+                                timeLeft--;
+                                display.innerText = formatTime(timeLeft);
+                            }
+                        }, 1000);
+                    }
+                });
+
+                resetBtn.addEventListener('click', () => {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timeLeft = duration;
+                    display.innerText = formatTime(timeLeft);
+                    updateButtonUI(false);
+                    playBeep(400, 0.05);
+                });
+            });
+            lucide.createIcons();
+        }
+
+        // Initial Runs
+        renderTasks();
+        initTimers();
+    </script>
+</body>
+</html>

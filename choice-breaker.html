@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADHD Choice-Breaker Engine</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Print Styles for the Printable Card */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-card-area, #printable-card-area * {
+                visibility: visible;
+            }
+            #printable-card-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white min-h-screen">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+                    <i data-lucide="help-circle" class="w-6 h-6 animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        ADHD Choice-Breaker <span class="text-xs font-semibold px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/30">v2.0</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Bypass choice paralysis and find your starting point in under 5 minutes</p>
+                </div>
+            </div>
+            
+            <!-- Tabs Navigation -->
+            <nav class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto overflow-x-auto">
+                <button onclick="switchTab('tree')" id="tab-tree" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap bg-indigo-600 text-white shadow-lg">
+                    <i data-lucide="git-branch" class="w-3.5 h-3.5"></i> Choice Diagnostics
+                </button>
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200">
+                    <i data-lucide="list-todo" class="w-3.5 h-3.5"></i> Interactive Slicer
+                </button>
+                <button onclick="switchTab('printable')" id="tab-printable" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200">
+                    <i data-lucide="printer" class="w-3.5 h-3.5"></i> Printable Card
+                </button>
+                <button onclick="switchTab('markdown')" id="tab-markdown" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Markdown Copy
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- ================= TAB 1: CHOICE DIAGNOSTICS ================= -->
+        <section id="content-tree" class="tab-content space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <!-- Start View -->
+                <div id="tree-start" class="text-center py-8 space-y-6">
+                    <div class="inline-flex p-3 bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/20 mb-2">
+                        <i data-lucide="alert-triangle" class="w-10 h-10"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h2 class="text-2xl font-bold text-white">Why are you stuck choosing right now?</h2>
+                        <p class="text-slate-400 max-w-md mx-auto text-sm">
+                            Select the statement that best describes your current mental bottleneck to get an immediate choice-breaking protocol.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto pt-4">
+                        <button onclick="setTreeState('dread')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-rose-500/50 transition-all text-left group">
+                            <div class="p-3 bg-rose-500/10 text-rose-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">"One heavy task is making me avoid everything."</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">You are experiencing cognitive dread and guilt.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="setTreeState('domino')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-indigo-500/50 transition-all text-left group">
+                            <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="arrow-right-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">"I want to make sure I get the best ROI."</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">You want to find the task that unlocks others.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="setTreeState('battery')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-emerald-500/50 transition-all text-left group">
+                            <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="battery-charging" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">"My energy is fluctuating wildly."</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">You need to match your choice to your brain's battery.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="setTreeState('bracket')" class="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 hover:border-amber-500/50 transition-all text-left group">
+                            <div class="p-3 bg-amber-500/10 text-amber-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <i data-lucide="swords" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">"I have too many options and they all look equal."</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">Your working memory is overloaded with choices.</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Method 1: Dread vs. Relief -->
+                <div id="tree-dread" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i>
+                            <h3 class="font-bold text-lg text-white">Method 1: The Dread vs. Relief Duel</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        The tasks we avoid most are usually "Monsters" causing a massive, background drain on our mental RAM. Choosing to tackle even a tiny piece of this task provides the single highest emotional ROI because it immediately stops the background anxiety.
+                    </p>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h4 class="font-semibold text-sm text-rose-400">The 3-Step Choice Protocol:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                            <li>Scan your list and isolate the **one task** you are actively avoiding or feeling guilty about.</li>
+                            <li>Write down the absolute smallest, most ridiculously easy micro-step for it (e.g., "Open the document and write the title").</li>
+                            <li>Set the 60-second decision timer below. Commit *only* to doing that micro-step. Once the dread is broken, momentum takes over.</li>
+                        </ol>
+                    </div>
+                    <div class="timer-container" data-duration="60" data-label="Decision Commitment Timer"></div>
+                </div>
+
+                <!-- Method 2: Domino Selector -->
+                <div id="tree-domino" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="arrow-right-circle" class="w-5 h-5 text-indigo-400"></i>
+                            <h3 class="font-bold text-lg text-white">Method 2: The Domino Selector</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Instead of looking at what is "important," look for the **Lever**. This is the task that, once completed, makes other tasks on your list easier, faster, or completely irrelevant.
+                    </p>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h4 class="font-semibold text-sm text-indigo-400">The 3-Step Choice Protocol:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                            <li>Look at your list and ask: <strong class="text-white">"If I could only do ONE thing today that would make tomorrow 50% easier, what is it?"</strong></li>
+                            <li>Look for tasks that unblock someone else, provide crucial information you need for other tasks, or clear a major bottleneck.</li>
+                            <li>If you find that "Domino" task, choose it immediately. Set the 60-second timer to lock in your decision.</li>
+                        </ol>
+                    </div>
+                    <div class="timer-container" data-duration="60" data-label="Decision Commitment Timer"></div>
+                </div>
+
+                <!-- Method 3: Battery Match -->
+                <div id="tree-battery" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="battery-charging" class="w-5 h-5 text-emerald-400"></i>
+                            <h3 class="font-bold text-lg text-white">Method 3: The Battery Match Filter</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Standard prioritization ignores your biological battery. Forcing a high-focus task when your dopamine is depleted leads to a shame spiral. You must match your choice to your current brain state.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-1">
+                            <span class="text-xs font-bold text-rose-400">Level 3 (High Battery)</span>
+                            <p class="text-xs text-slate-300">Creative, problem-solving, deep focus, heavy writing.</p>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-1">
+                            <span class="text-xs font-bold text-amber-400">Level 2 (Medium Battery)</span>
+                            <p class="text-xs text-slate-300">Routine tasks, responding to standard emails, editing.</p>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-1">
+                            <span class="text-xs font-bold text-emerald-400">Level 1 (Low Battery)</span>
+                            <p class="text-xs text-slate-300">Physical tasks, filing, cleaning, mindless data entry.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h4 class="font-semibold text-sm text-slate-200">The 3-Step Choice Protocol:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                            <li>Check your physical energy. Rate it: Level 3, Level 2, or Level 1.</li>
+                            <li>Filter your list to *only* show tasks that match your current level.</li>
+                            <li>Pick any task from that matched list. If you are at Level 1, do not even look at Level 3 tasks.</li>
+                        </ol>
+                    </div>
+                    <div class="timer-container" data-duration="60" data-label="Decision Commitment Timer"></div>
+                </div>
+
+                <!-- Method 4: Binary Bracket -->
+                <div id="tree-bracket" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="swords" class="w-5 h-5 text-amber-400"></i>
+                            <h3 class="font-bold text-lg text-white">Method 4: The Binary Bracket</h3>
+                        </div>
+                        <button onclick="resetTree()" class="text-xs text-slate-400 hover:text-white underline">Start Over</button>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        The ADHD brain cannot compare 10 things at once; working memory bottlenecks. But it *can* easily compare 2 things. This method uses a tournament-style bracket to eliminate choice.
+                    </p>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h4 class="font-semibold text-sm text-amber-400">The 3-Step Choice Protocol:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                            <li>Pick any **two** tasks from your list. Ask: <strong class="text-white">"Between these two, which one is more urgent or satisfying?"</strong></li>
+                            <li>Eliminate the loser. Take the winner and compare it to a *third* task.</li>
+                            <li>Repeat this binary "duel" 3 or 4 times. The final standing task is your immediate priority. (Try our interactive version in the next tab!)</li>
+                        </ol>
+                    </div>
+                    <div class="timer-container" data-duration="60" data-label="Decision Commitment Timer"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: INTERACTIVE SLICER DASHBOARD ================= -->
+        <section id="content-dashboard" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Task Input & List -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                        <i data-lucide="list-todo" class="w-5 h-5 text-indigo-400"></i> Task Dump
+                    </h3>
+                    <form onsubmit="handleAddTask(event)" class="space-y-4">
+                        <input type="text" id="task-text-input" placeholder="What needs to be done?" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500" required>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Energy Level</label>
+                                <select id="task-energy-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                                    <option value="3">⚡⚡⚡ High (3)</option>
+                                    <option value="2" selected>⚡⚡ Med (2)</option>
+                                    <option value="1">⚡ Low (1)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Is it a Domino?</label>
+                                <select id="task-type-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                                    <option value="normal" selected>No</option>
+                                    <option value="domino">⚙️ Yes (Unlocks others)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Dread Level</label>
+                                <select id="task-dread-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                                    <option value="low" selected>Low Dread</option>
+                                    <option value="high">💀 High Dread</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-colors">Add Task</button>
+                    </form>
+                </div>
+
+                <!-- Task List Container -->
+                <div id="clutter-container" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-slate-300">Your Current Brain Dump (<span id="task-count">0</span>)</h4>
+                        <div class="flex gap-2">
+                            <button onclick="startBinaryBracket()" id="bracket-btn" class="hidden px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center gap-1">
+                                <i data-lucide="swords" class="w-3.5 h-3.5"></i> Binary Bracket
+                            </button>
+                            <button onclick="filterMyBrain()" id="filter-brain-btn" class="hidden px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center gap-1">
+                                <i data-lucide="brain" class="w-3.5 h-3.5"></i> Auto-Filter Choice
+                            </button>
+                        </div>
+                    </div>
+                    <div id="task-list" class="space-y-2">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Choice Mode Column -->
+            <div class="space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl h-full flex flex-col justify-between min-h-[350px]">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+                            <h3 class="font-bold text-sm text-slate-300 flex items-center gap-2">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i> Active Choice
+                            </h3>
+                            <button onclick="showAllClutter()" id="show-all-btn" class="hidden text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Show All
+                            </button>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="focus-empty-state" class="text-center py-12 space-y-3">
+                            <div class="inline-flex p-3 bg-slate-800 text-slate-500 rounded-full">
+                                <i data-lucide="eye-off" class="w-6 h-6"></i>
+                            </div>
+                            <p class="text-xs text-slate-400 max-w-xs mx-auto">
+                                Add tasks to your dump, then select <strong class="text-slate-300">"Auto-Filter Choice"</strong> or <strong class="text-slate-300">"Binary Bracket"</strong> to force a decision.
+                            </p>
+                        </div>
+
+                        <!-- Binary Bracket Interactive Duel -->
+                        <div id="bracket-active-state" class="hidden space-y-6">
+                            <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest block text-center">Binary Bracket: Choose One!</span>
+                            <div class="space-y-3">
+                                <button onclick="selectBracketWinner('left')" id="bracket-left-btn" class="w-full p-4 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 rounded-xl text-left transition-all">
+                                    <span class="text-[10px] text-slate-500 block">Option A</span>
+                                    <p id="bracket-left-text" class="text-xs font-bold text-white mt-1"></p>
+                                </button>
+                                <div class="text-center text-xs text-slate-500 font-bold">VS</div>
+                                <button onclick="selectBracketWinner('right')" id="bracket-right-btn" class="w-full p-4 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 rounded-xl text-left transition-all">
+                                    <span class="text-[10px] text-slate-500 block">Option B</span>
+                                    <p id="bracket-right-text" class="text-xs font-bold text-white mt-1"></p>
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-slate-400 text-center italic">Which task feels more urgent, satisfying, or unblocking right now?</p>
+                        </div>
+
+                        <!-- Active Focus Task -->
+                        <div id="focus-active-state" class="hidden space-y-6">
+                            <div class="p-4 bg-slate-950 border border-emerald-500/30 rounded-xl space-y-2">
+                                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Your Chosen Task:</span>
+                                <p id="focus-task-text" class="text-base font-bold text-white"></p>
+                            </div>
+                            <div class="space-y-2">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Why this task?</span>
+                                <p id="focus-task-reason" class="text-xs text-slate-300 leading-relaxed"></p>
+                            </div>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Action Strategy:</span>
+                                <p class="text-xs text-slate-300">Set the timer below. Your goal is not to finish the entire task, but just to work on it for 3 minutes.</p>
+                                <div class="timer-container" data-duration="180" data-label="Action Timer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Focus Footer Controls -->
+                    <div id="focus-controls" class="hidden pt-6 border-t border-slate-800 flex gap-2">
+                        <button onclick="markFocusCompleted()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-1">
+                            <i data-lucide="check" class="w-3.5 h-3.5"></i> Mark Completed
+                        </button>
+                        <button onclick="resetFocus()" class="px-3 py-2 bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs rounded-lg transition-colors">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: PRINTABLE CHEAT SHEET ================= -->
+        <section id="content-printable" class="tab-content hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div class="space-y-1">
+                    <h3 class="font-bold text-lg text-white">Printable Choice-Breaker Cheat Sheet</h3>
+                    <p class="text-xs text-slate-400">Keep this on your physical desk or fold it into your wallet to bypass digital screens.</p>
+                </div>
+                <button onclick="window.print()" class="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-colors">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Print Card
+                </button>
+            </div>
+
+            <div id="printable-card-area" class="bg-white text-slate-950 p-8 rounded-2xl border border-slate-200 shadow-xl max-w-2xl mx-auto">
+                <div class="border-2 border-dashed border-slate-400 p-6 rounded-xl space-y-6">
+                    <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
+                        <div>
+                            <h2 class="text-lg font-black tracking-tight uppercase">ADHD Choice-Breaker</h2>
+                            <p class="text-[10px] text-slate-600 font-medium">Run these 5 choice-breaking protocols to bypass decision paralysis.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] font-bold bg-slate-900 text-white px-2 py-0.5 rounded">FOLDABLE CARD</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="space-y-1 border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-4">
+                            <h4 class="font-bold text-slate-900">1. The Dread vs. Relief Duel</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Isolate the ONE task causing a background hum of guilt/anxiety. Write down the absolute smallest, easiest micro-step for it. Commit *only* to doing that micro-step.</p>
+                        </div>
+                        <div class="space-y-1 pb-4 md:pb-0">
+                            <h4 class="font-bold text-slate-900">2. The Domino Selector</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Ask: *"If I could only do ONE thing today that would make tomorrow 50% easier, what is it?"* Find the task that unblocks others or clears a major bottleneck.</p>
+                        </div>
+                        <div class="space-y-1 border-t border-slate-200 pt-4 border-b md:border-b-0 md:border-r md:pr-4">
+                            <h4 class="font-bold text-slate-900">3. The Battery Match Filter</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Match choices to your biological battery: Level 3 (Creative/deep focus), Level 2 (Routine/emails), Level 1 (Cleaning/mindless data entry). Filter out mismatched tasks.</p>
+                        </div>
+                        <div class="space-y-1 border-t border-slate-200 pt-4">
+                            <h4 class="font-bold text-slate-900">4. The Binary Bracket</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Compare exactly TWO tasks. Ask: *"Which is more urgent or satisfying?"* Eliminate the loser, pit the winner against a third task. Repeat until one remains.</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t-2 border-slate-900 pt-4 space-y-2">
+                        <h4 class="font-bold text-xs text-slate-900 uppercase tracking-wider">5. The 60-Second Coin Flip (Gut-Check)</h4>
+                        <div class="grid grid-cols-3 gap-2 text-[10px] text-slate-600 leading-relaxed">
+                            <div class="bg-slate-100 p-2 rounded">
+                                <span class="font-bold text-slate-900 block">Step 1: Assign</span> Pick your top 2 competing tasks. Assign one to Heads, one to Tails.
+                            </div>
+                            <div class="bg-slate-100 p-2 rounded">
+                                <span class="font-bold text-slate-900 block">Step 2: Flip</span> Flip a coin. Pay close attention to your reaction the second it lands.
+                            </div>
+                            <div class="bg-slate-100 p-2 rounded">
+                                <span class="font-bold text-slate-900 block">Step 3: Act</span> If you feel a flash of disappointment or relief, ignore the coin and go with your gut.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: MARKDOWN COPY-PASTE ================= -->
+        <section id="content-markdown" class="tab-content hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div class="space-y-1">
+                    <h3 class="font-bold text-lg text-white">Markdown Copy-Paste Guide</h3>
+                    <p class="text-xs text-slate-400">Copy this pre-formatted markdown guide directly into Notion, Obsidian, or Apple Notes.</p>
+                </div>
+                <button onclick="copyMarkdown()" class="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-colors">
+                    <i id="copy-icon" data-lucide="copy" class="w-4 h-4"></i> <span id="copy-text">Copy Markdown</span>
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <pre id="markdown-block" class="text-xs text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-[500px] overflow-y-auto bg-slate-950 p-4 rounded-xl border border-slate-800">## 🧠 ADHD Choice-Breaker Flowchart
+
+> **The Golden Rule:** The ADHD brain is paralyzed by too many options. Bypass the prefrontal cortex by forcing binary decisions or matching tasks to physical energy.
+
+### ⚡ Quick Diagnostic Flowchart
+1. **Why are you stuck choosing right now?**
+   * **"One heavy task is making me avoid everything."** ➔ Go to **Method 1: Dread vs. Relief Duel**
+   * **"I want to make sure I get the best ROI."** ➔ Go to **Method 2: Domino Selector**
+   * **"My energy is fluctuating wildly."** ➔ Go to **Method 3: Battery Match Filter**
+   * **"I have too many options and they all look equal."** ➔ Go to **Method 4: Binary Bracket** or **Method 5: 60-Second Coin Flip**
+
+---
+
+### 🛠️ The 5-Minute Choice Protocols
+
+#### 1. The Dread vs. Relief Duel (Risk Reduction)
+* **Goal:** Break cognitive dread and stop background anxiety.
+* **Protocol:**
+  1. Scan your list and isolate the ONE task causing a background hum of guilt/anxiety.
+  2. Write down the absolute smallest, most ridiculously easy micro-step for it.
+  3. Commit *only* to doing that micro-step. Once the dread is broken, momentum takes over.
+
+#### 2. The Domino Selector (High ROI / Leverage)
+* **Goal:** Find the task that unblocks others or clears a major bottleneck.
+* **Protocol:**
+  1. Ask: *"If I could only do ONE thing today that would make tomorrow 50% easier, what is it?"*
+  2. Look for tasks that unblock someone else, provide crucial information, or clear a major bottleneck.
+  3. If you find that "Domino" task, choose it immediately.
+
+#### 3. The Battery Match Filter (Momentum Preservation)
+* **Goal:** Match your choice to your biological battery.
+* **Protocol:**
+  * **Level 3 (High Battery):** Creative, problem-solving, deep focus, heavy writing.
+  * **Level 2 (Medium Battery):** Routine tasks, responding to standard emails, editing.
+  * **Level 1 (Low Battery):** Physical tasks, filing, cleaning, mindless data entry.
+  * *Action:* Check your energy level, filter out mismatched tasks, and choose from what remains.
+
+#### 4. The Binary Bracket (Working Memory Offloader)
+* **Goal:** Eliminate choice overload by comparing exactly two options at a time.
+* **Protocol:**
+  1. Pick any TWO tasks. Ask: *"Which is more urgent or satisfying?"*
+  2. Eliminate the loser. Pit the winner against a third task.
+  3. Repeat until only one task remains.
+
+#### 5. The 60-Second Coin Flip (The Gut-Check)
+* **Goal:** Bypass the prefrontal cortex and tap into your subconscious desire.
+* **Protocol:**
+  1. Pick your top 2 competing tasks. Assign one to Heads, one to Tails.
+  2. Flip a coin.
+  3. The moment the coin lands, notice your gut reaction. If you feel a flash of disappointment or relief, ignore the coin and go with what your gut actually wanted.</pre>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Audio Synthesizer (No external sound files needed)
+        function playBeep(freq = 880, duration = 0.15) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.log("AudioContext blocked or unsupported by browser security policies.");
+            }
+        }
+
+        // --- TAB SWITCHING LOGIC ---
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Show selected content
+            const targetContent = document.getElementById(`content-${tabId}`);
+            if (targetContent) {
+                if (tabId === 'dashboard') {
+                    targetContent.classList.remove('hidden');
+                    targetContent.classList.add('grid');
+                } else {
+                    targetContent.classList.remove('hidden');
+                }
+            }
+
+            // Update active tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap text-slate-400 hover:text-slate-200";
+            });
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap bg-indigo-600 text-white shadow-lg";
+            }
+        }
+
+        // --- TAB 1: DECISION TREE LOGIC ---
+        let currentTreeState = 'start';
+        function setTreeState(state) {
+            currentTreeState = state;
+            // Hide all states
+            document.getElementById('tree-start').classList.add('hidden');
+            document.getElementById('tree-dread').classList.add('hidden');
+            document.getElementById('tree-domino').classList.add('hidden');
+            document.getElementById('tree-battery').classList.add('hidden');
+            document.getElementById('tree-bracket').classList.add('hidden');
+
+            // Show selected state
+            document.getElementById(`tree-${state}`).classList.remove('hidden');
+        }
+
+        function resetTree() {
+            setTreeState('start');
+        }
+
+        // --- TAB 2: TASK SLICER DASHBOARD LOGIC ---
+        let tasks = [
+            { id: 1, text: 'Clear up desktop files', energy: '1', type: 'normal', dread: 'low' },
+            { id: 2, text: 'Submit quarterly report draft', energy: '3', type: 'domino', dread: 'high' },
+            { id: 3, text: 'Organize digital templates', energy: '2', type: 'domino', dread: 'low' }
+        ];
+        let activeFocusTask = null;
+        
+        // Binary Bracket State
+        let bracketQueue = [];
+        let currentLeft = null;
+        let currentRight = null;
+
+        function renderTasks() {
+            const listEl = document.getElementById('task-list');
+            const countEl = document.getElementById('task-count');
+            const filterBtn = document.getElementById('filter-brain-btn');
+            const bracketBtn = document.getElementById('bracket-btn');
+            
+            listEl.innerHTML = '';
+            countEl.innerText = tasks.length;
+
+            if (tasks.length > 0) {
+                filterBtn.classList.remove('hidden');
+            } else {
+                filterBtn.classList.add('hidden');
+            }
+
+            if (tasks.length >= 2) {
+                bracketBtn.classList.remove('hidden');
+            } else {
+                bracketBtn.classList.add('hidden');
+            }
+
+            tasks.forEach(task => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = "flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl";
+                
+                let tagsHTML = `<span class="text-[9px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded">Energy: ${task.energy}</span>`;
+                if (task.type === 'domino') tagsHTML += `<span class="text-[9px] px-1.5 py-0.5 bg-indigo-500/15 text-indigo-400 rounded border border-indigo-500/25">⚙️ Domino</span>`;
+                if (task.dread === 'high') tagsHTML += `<span class="text-[9px] px-1.5 py-0.5 bg-rose-500/15 text-rose-400 rounded border border-rose-500/25">💀 High Dread</span>`;
+
+                taskDiv.innerHTML = `
+                    <div class="space-y-1 flex-1 min-w-0 pr-3">
+                        <p class="text-xs font-semibold text-slate-200 truncate">${task.text}</p>
+                        <div class="flex flex-wrap gap-1.5">${tagsHTML}</div>
+                    </div>
+                    <button onclick="deleteTask(${task.id})" class="text-slate-500 hover:text-rose-400 p-1 rounded transition-colors">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+                listEl.appendChild(taskDiv);
+            });
+            lucide.createIcons();
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const text = document.getElementById('task-text-input').value;
+            const energy = document.getElementById('task-energy-input').value;
+            const type = document.getElementById('task-type-input').value;
+            const dread = document.getElementById('task-dread-input').value;
+
+            tasks.push({ id: Date.now(), text, energy, type, dread });
+            document.getElementById('task-text-input').value = '';
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            renderTasks();
+            if (activeFocusTask && activeFocusTask.id === id) {
+                resetFocus();
+            }
+        }
+
+        // AUTO FILTER LOGIC
+        function filterMyBrain() {
+            if (tasks.length === 0) return;
+
+            let selected = null;
+            let reason = '';
+
+            const highDread = tasks.filter(t => t.dread === 'high');
+            const dominoes = tasks.filter(t => t.type === 'domino');
+
+            if (highDread.length > 0) {
+                selected = highDread[Math.floor(Math.random() * highDread.length)];
+                reason = 'Dread vs. Relief Duel: This task is causing the highest background anxiety. Knocking out even a micro-step of this will free up the most mental energy.';
+            } else if (dominoes.length > 0) {
+                selected = dominoes[Math.floor(Math.random() * dominoes.length)];
+                reason = 'Domino Selector: This task is an investment. Doing it will make other tasks easier or completely irrelevant tomorrow.';
+            } else {
+                selected = tasks[Math.floor(Math.random() * tasks.length)];
+                reason = 'Random Choice Breaker: No critical dread or domino tasks detected. Let\'s bypass overthinking and start here!';
+            }
+
+            activeFocusTask = selected;
+            showFocusTask(selected, reason);
+        }
+
+        // BINARY BRACKET LOGIC
+        function startBinaryBracket() {
+            if (tasks.length < 2) return;
+            bracketQueue = [...tasks];
+            
+            // Shuffle queue slightly
+            bracketQueue.sort(() => Math.random() - 0.5);
+            
+            setupNextDuel();
+        }
+
+        function setupNextDuel() {
+            if (bracketQueue.length === 1) {
+                // We have a winner!
+                activeFocusTask = bracketQueue[0];
+                showFocusTask(activeFocusTask, 'Binary Bracket Winner: You compared your options head-to-head, and this task won. Your brain has spoken—trust the bracket.');
+                return;
+            }
+
+            currentLeft = bracketQueue.shift();
+            currentRight = bracketQueue.shift();
+
+            document.getElementById('bracket-left-text').innerText = currentLeft.text;
+            document.getElementById('bracket-right-text').innerText = currentRight.text;
+
+            // Show Bracket UI
+            document.getElementById('focus-empty-state').classList.add('hidden');
+            document.getElementById('bracket-active-state').classList.remove('hidden');
+            document.getElementById('focus-active-state').classList.add('hidden');
+            document.getElementById('focus-controls').classList.add('hidden');
+
+            // Hide Clutter
+            document.getElementById('clutter-container').classList.add('hidden');
+            document.getElementById('show-all-btn').classList.remove('hidden');
+        }
+
+        function selectBracketWinner(side) {
+            playBeep(600, 0.05);
+            const winner = (side === 'left') ? currentLeft : currentRight;
+            bracketQueue.push(winner);
+            setupNextDuel();
+        }
+
+        function showFocusTask(task, reason) {
+            document.getElementById('focus-task-text').innerText = task.text;
+            document.getElementById('focus-task-reason').innerText = reason;
+            
+            document.getElementById('focus-empty-state').classList.add('hidden');
+            document.getElementById('bracket-active-state').classList.add('hidden');
+            document.getElementById('focus-active-state').classList.remove('hidden');
+            document.getElementById('focus-controls').classList.remove('hidden');
+
+            // Hide Clutter
+            document.getElementById('clutter-container').classList.add('hidden');
+            document.getElementById('show-all-btn').classList.remove('hidden');
+        }
+
+        function showAllClutter() {
+            document.getElementById('clutter-container').classList.remove('hidden');
+            document.getElementById('show-all-btn').classList.add('hidden');
+        }
+
+        function resetFocus() {
+            activeFocusTask = null;
+            document.getElementById('focus-empty-state').classList.remove('hidden');
+            document.getElementById('bracket-active-state').classList.add('hidden');
+            document.getElementById('focus-active-state').classList.add('hidden');
+            document.getElementById('focus-controls').classList.add('hidden');
+            showAllClutter();
+        }
+
+        function markFocusCompleted() {
+            if (activeFocusTask) {
+                deleteTask(activeFocusTask.id);
+            }
+            resetFocus();
+        }
+
+        // --- TAB 4: COPY MARKDOWN ---
+        function copyMarkdown() {
+            const text = document.getElementById('markdown-block').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btnText = document.getElementById('copy-text');
+                const btnIcon = document.getElementById('copy-icon');
+                btnText.innerText = 'Copied!';
+                btnIcon.setAttribute('data-lucide', 'check');
+                lucide.createIcons();
+                playBeep(1000, 0.1);
+                setTimeout(() => {
+                    btnText.innerText = 'Copy Markdown';
+                    btnIcon.setAttribute('data-lucide', 'copy');
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+
+        // --- REUSABLE TIMER ENGINE ---
+        function initTimers() {
+            document.querySelectorAll('.timer-container').forEach(container => {
+                const duration = parseInt(container.getAttribute('data-duration'));
+                const labelText = container.getAttribute('data-label') || "Action Timer";
+                let timeLeft = duration;
+                let timerInterval = null;
+
+                const formatTime = (secs) => {
+                    const m = Math.floor(secs / 60);
+                    const s = secs % 60;
+                    return `${m}:${s < 10 ? '0' : ''}${s}`;
+                };
+
+                container.innerHTML = `
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="time-display text-2xl font-black font-mono text-white tracking-widest bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
+                                ${formatTime(timeLeft)}
+                            </div>
+                            <div class="text-left">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">${labelText}</span>
+                                <span class="text-xs text-slate-300">Commit to your choice.</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button class="play-btn flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 rounded-lg font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors">
+                                <i data-lucide="play" class="w-3.5 h-3.5"></i> <span>Start</span>
+                            </button>
+                            <button class="reset-btn px-3 py-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg transition-colors">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                const display = container.querySelector('.time-display');
+                const playBtn = container.querySelector('.play-btn');
+                const resetBtn = container.querySelector('.reset-btn');
+
+                const updateButtonUI = (running) => {
+                    const icon = playBtn.querySelector('i');
+                    const label = playBtn.querySelector('span');
+                    if (running) {
+                        playBtn.className = "play-btn flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 rounded-lg font-bold text-xs bg-amber-600 hover:bg-amber-500 text-white transition-colors";
+                        icon.setAttribute('data-lucide', 'pause');
+                        label.innerText = 'Pause';
+                    } else {
+                        playBtn.className = "play-btn flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 rounded-lg font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors";
+                        icon.setAttribute('data-lucide', 'play');
+                        label.innerText = 'Start';
+                    }
+                    lucide.createIcons();
+                };
+
+                playBtn.addEventListener('click', () => {
+                    if (timerInterval) {
+                        // Pause
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        updateButtonUI(false);
+                        playBeep(600, 0.05);
+                    } else {
+                        // Start
+                        updateButtonUI(true);
+                        playBeep(600, 0.05);
+                        timerInterval = setInterval(() => {
+                            if (timeLeft <= 1) {
+                                clearInterval(timerInterval);
+                                timerInterval = null;
+                                timeLeft = 0;
+                                display.innerText = formatTime(0);
+                                updateButtonUI(false);
+                                playBeep(880, 0.5); // Completion Beep
+                            } else {
+                                timeLeft--;
+                                display.innerText = formatTime(timeLeft);
+                            }
+                        }, 1000);
+                    }
+                });
+
+                resetBtn.addEventListener('click', () => {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timeLeft = duration;
+                    display.innerText = formatTime(timeLeft);
+                    updateButtonUI(false);
+                    playBeep(400, 0.05);
+                });
+            });
+            lucide.createIcons();
+        }
+
+        // Initial Runs
+        renderTasks();
+        initTimers();
+    </script>
+</body>
+</html>
